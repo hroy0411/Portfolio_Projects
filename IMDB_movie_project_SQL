@@ -1,0 +1,68 @@
+--view dataset--
+SELECT * 
+FROM IMDB_movies_cleaned;
+
+--change table name--
+ALTER TABLE  IMDB_movies_cleaned RENAME TO Movies
+
+select *
+From Movies
+
+--Top 5 movies budgeted movies--IMDB_movies_cleaned
+Select name, budget
+from Movies
+Order by budget DESC
+Limit 5
+
+--there is an outlier in both Princess Mononoke and 3 Idiots, so we will need to replace the budget in both--IMDB_movies_cleaned
+
+--update Princess Mononoke--
+Update Movies
+Set budget = replace (budget, 2400000000, 23500000)
+
+--update 3 idiots--
+Update Movies
+set budget = replace (budget, 550000000, 6700000)
+
+--updated top 5 budgeted movies--Movies
+Select name, budget
+FROm Movies
+order by budget DESC
+Limit 5
+
+--top five rated movies--
+Select name, rating
+from Movies
+Order by rating DESC
+Limit 5
+
+-- top five box office hits--Movies
+Select name, box_office
+from Movies
+Group by name
+order by box_office DESC
+Limit 5
+
+--top ten highest profit--
+select name, budget, box_office, (box_office - budget) as profit
+from Movies
+ORDER by profit DESC
+Limit 10
+
+-- Most Popular genre--
+SELECT genre, Count (*) AS genre_count
+from (
+  select trim (value) as genre
+  from Movies
+  cross join json_each('["'|| replace(genre, ',','","')||'"]')
+ )
+ group by genre
+ order by genre_count
+ Limit 5
+ 
+ --tope 10 directors--
+ select directors, count (*) as number_of_movies
+ from Movies
+ group by directors
+ order by Count(*) DESC
+ limit 10
